@@ -1,5 +1,9 @@
 To run project:
 
+NOTE: 
+- I deployed this project on Heroku
+  ( http://arabic-writers.herokuapp.com/ )
+
 1 - Clone project from GitHub 
     
     git clone https://github.com/Mahmoud59/arabic-writers.git
@@ -17,14 +21,19 @@ To run project:
     pip install -r requirements/test-requirements.txt 
 
 4 - For list csv file data (127.0.0.1:8000/api/v1/arabic-writers/) GET
+    Or with Heroku ( http://arabic-writers.herokuapp.com/api/v1/arabic-writers/ )
 
 5 - For add new row to csv file (127.0.0.1:8000/api/v1/arabic-writers/) POST
+    Or with Heroku ( http://arabic-writers.herokuapp.com/api/v1/arabic-writers/ )
 
 6 - For retrieve csv file data (127.0.0.1:8000/api/v1/arabic-writers/'arabic-writers-id'/) GET
+    Or with Heroku ( http://arabic-writers.herokuapp.com/api/v1/arabic-writers/'arabic-writers-id'/ )
 
 7 - For modify csv file data (127.0.0.1:8000/api/v1/arabic-writers/'arabic-writers-id'/) PATCH
+    Or with Heroku ( http://arabic-writers.herokuapp.com/api/v1/arabic-writers/'arabic-writers-id'/ )
 
 8 - For delete csv file row (127.0.0.1:8000/api/v1/arabic-writers/'arabic-writers-id'/) DELETE
+    Or with Heroku ( http://arabic-writers.herokuapp.com/api/v1/arabic-writers/'arabic-writers-id'/ )
 
 7 - For run unit test, run `pytest` in apps src directory.
 
