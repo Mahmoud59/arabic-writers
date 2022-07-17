@@ -2,25 +2,25 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from arabic_writers.helpers import CSVFile
+from arabic_writers.helpers import SheetFile
 
 
 class ArabicWriterAPIView(APIView):
     permission_classes = ()
 
     def get(self, request):
-        csv_file_path = request.query_params.get(
-            'csv_file_path', 'wikipedia_arabic_novels.csv')
+        xlsx_file_path = request.query_params.get(
+            'xlsx_file_path', 'wikipedia_arabic_novels.xlsx')
 
-        csv_file_data = CSVFile.list_csv_file_data(csv_file_path)
-        return Response(csv_file_data, status=status.HTTP_200_OK)
+        xlsx_file_data = SheetFile.list_xlsx_file_data(xlsx_file_path)
+        return Response(xlsx_file_data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        csv_file_path = request.query_params.get(
-            'csv_file_path', 'wikipedia_arabic_novels.csv')
+        xlsx_file_path = request.query_params.get(
+            'xlsx_file_path', 'wikipedia_arabic_novels.xlsx')
 
-        CSVFile.add_data_into_csv_file(
-            csv_file_path, list(request.data.values()))
+        SheetFile.add_data_into_xlsx_file(
+            xlsx_file_path, list(request.data.values()))
         return Response({"message": "Data added successfully"},
                         status=status.HTTP_200_OK)
 
@@ -29,30 +29,30 @@ class ArabicWriterDetailAPIView(APIView):
     permission_classes = ()
 
     def get(self, request, pk):
-        csv_file_path = request.query_params.get(
-            'csv_file_path', 'wikipedia_arabic_novels.csv')
+        xlsx_file_path = request.query_params.get(
+            'xlsx_file_path', 'wikipedia_arabic_novels.xlsx')
 
-        csv_file_data = CSVFile.retrieve_csv_file_data(
-            csv_file_path, str(pk))
-        if not csv_file_data:
+        xlsx_file_data = SheetFile.retrieve_xlsx_file_data(
+            xlsx_file_path, str(pk))
+        if not xlsx_file_data:
             return Response({"message": "Not Found"},
                             status=status.HTTP_404_NOT_FOUND)
-        return Response(csv_file_data,
+        return Response(xlsx_file_data,
                         status=status.HTTP_200_OK)
 
     def patch(self, request, pk):
-        csv_file_path = request.query_params.get(
-            'csv_file_path', 'wikipedia_arabic_novels.csv')
+        xlsx_file_path = request.query_params.get(
+            'xlsx_file_path', 'wikipedia_arabic_novels.xlsx')
 
-        CSVFile.update_csv_file_data(
-            csv_file_path, str(pk), list(request.data.values()))
+        SheetFile.update_xlsx_file_data(
+            xlsx_file_path, pk, list(request.data.values()))
         return Response({"message": "Data updated successfully"},
                         status=status.HTTP_200_OK)
 
     def delete(self, request, pk):
-        csv_file_path = request.query_params.get(
-            'csv_file_path', 'wikipedia_arabic_novels.csv')
+        xlsx_file_path = request.query_params.get(
+            'xlsx_file_path', 'wikipedia_arabic_novels.xlsx')
 
-        CSVFile.delete_csv_file_data(csv_file_path, str(pk))
+        SheetFile.delete_xlsx_file_data(xlsx_file_path, pk)
         return Response({"message": "Data deleted successfully"},
                         status=status.HTTP_204_NO_CONTENT)

@@ -1,10 +1,10 @@
-import csv
 import os
 import shutil
 
 import pytest
 from django.test import override_settings
 from django.urls import reverse
+from openpyxl.workbook import Workbook
 from rest_framework import status
 
 from tests.constants import (
@@ -40,26 +40,26 @@ class TestArabicWriterEndpoints:
         self.dest_filename = f"{MEDIA_DIR}{ARABIC_WRITERS_DIR}" \
                              f"{ARABIC_WRITERS_EXCEL}"
 
-        with open(self.dest_filename, 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow(self.header)
-            for row in self.new_data:
-                writer.writerow(row)
+        self.wb = Workbook()
+        self.ws1 = self.wb.active
+        self.ws1.append(self.header)
+        self.ws1.title = "Sheet1"
+        for row in self.new_data:
+            self.ws1.append(row)
+        self.wb.save(filename=self.dest_filename)
 
         self.url_list = reverse('arabic-writer-list')
-        self.url_list += f"?csv_file_path={self.dest_filename}"
+        self.url_list += f"?xlsx_file_path={self.dest_filename}"
         self.url_detail = reverse('arabic-writer-detail',
                                   kwargs={"pk": self.arabic_writer_id_1})
-        self.url_detail += f"?csv_file_path={self.dest_filename}"
+        self.url_detail += f"?xlsx_file_path={self.dest_filename}"
 
     def test_list_arabic_writers_data_success(self, drf_client):
         response = drf_client.get(self.url_list)
         assert response.status_code == status.HTTP_200_OK
         assert response.data[0]['id'] == self.arabic_writer_id_1
-        assert response.data[0]['book_name'] == ARABIC_WRITERS_BOOK_1_URL
 
         assert response.data[1]['id'] == self.arabic_writer_id_2
-        assert response.data[1]['book_name'] == ARABIC_WRITERS_BOOK_2_URL
 
     def test_add_new_arabic_writer_success(self, drf_client):
         self.body = {
@@ -72,22 +72,20 @@ class TestArabicWriterEndpoints:
 
         self.url_detail = reverse('arabic-writer-detail',
                                   kwargs={"pk": self.arabic_writer_id_3})
-        self.url_detail += f"?csv_file_path={self.dest_filename}"
+        self.url_detail += f"?xlsx_file_path={self.dest_filename}"
         response = drf_client.get(self.url_detail)
         assert response.status_code == status.HTTP_200_OK
         assert response.data['id'] == self.arabic_writer_id_3
-        assert response.data['book_name'] == ARABIC_WRITERS_BOOK_3_URL
 
     def test_retrieve_arabic_writer_success(self, drf_client):
         response = drf_client.get(self.url_detail)
         assert response.status_code == status.HTTP_200_OK
         assert response.data['id'] == self.arabic_writer_id_1
-        assert response.data['book_name'] == ARABIC_WRITERS_BOOK_1_URL
 
     def test_retrieve_arabic_writer_not_found_failed(self, drf_client):
         self.url_detail = reverse('arabic-writer-detail',
                                   kwargs={"pk": 1000})
-        self.url_detail += f"?csv_file_path={self.dest_filename}"
+        self.url_detail += f"?xlsx_file_path={self.dest_filename}"
         response = drf_client.get(self.url_detail)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -113,7 +111,7 @@ class TestArabicWriterEndpoints:
         }
         self.url_detail = reverse('arabic-writer-detail',
                                   kwargs={"pk": 1000})
-        self.url_detail += f"?csv_file_path={self.dest_filename}"
+        self.url_detail += f"?xlsx_file_path={self.dest_filename}"
         response = drf_client.get(self.url_detail)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -124,7 +122,7 @@ class TestArabicWriterEndpoints:
     def test_delete_arabic_writer_not_found_failed(self, drf_client):
         self.url_detail = reverse('arabic-writer-detail',
                                   kwargs={"pk": 1000})
-        self.url_detail += f"?csv_file_path={self.dest_filename}"
+        self.url_detail += f"?xlsx_file_path={self.dest_filename}"
         response = drf_client.get(self.url_detail)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 

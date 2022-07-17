@@ -1,7 +1,7 @@
 MEDIA_DIR = "tests/media"
 
 ARABIC_WRITERS_DIR = "/arabic_writers"
-ARABIC_WRITERS_EXCEL = "/arabic_writers.csv"
+ARABIC_WRITERS_EXCEL = "/arabic_writers.xlsx"
 
 ARABIC_WRITERS_BOOK_1_URL = "https://ar.wikipedia.org/wiki/%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D9%8A%D8%A9_(%D9%86%D8%AC%D9%8A%D8%A8_%D9%85%D8%AD%D9%81%D9%88%D8%B8)"
 ARABIC_WRITERS_AUTHOR_1_URL = "https://ar.wikipedia.org/wiki/%D9%86%D8%AC%D9%8A%D8%A8_%D9%85%D8%AD%D9%81%D9%88%D8%B8"

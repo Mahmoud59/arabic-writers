@@ -1,73 +1,54 @@
-import csv
-import shutil
-from tempfile import NamedTemporaryFile
-
+import pandas as pd
+from openpyxl import load_workbook
 from rest_framework.exceptions import NotFound
 
 from arabic_writers.serializers import DataSerializer
 
 
-class CSVFile(object):
+class SheetFile(object):
 
     @staticmethod
-    def list_csv_file_data(csv_file_path):
-        with open(csv_file_path, 'r') as file:
-            rows = csv.reader(file)
-            return DataSerializer(list(rows)[1:], many=True).data
+    def list_xlsx_file_data(xlsx_file_path):
+        data_frame = pd.read_excel(xlsx_file_path, engine='openpyxl',
+                                   dtype=object, header=None)
+        return DataSerializer(data_frame.values.tolist()[1:], many=True).data
 
     @staticmethod
-    def add_data_into_csv_file(csv_file_path, new_data):
-        with open(csv_file_path, 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow(new_data)
+    def add_data_into_xlsx_file(xlsx_file_path, new_data):
+        workbook = load_workbook(xlsx_file_path)
+        worksheet = workbook.worksheets[0]
+        worksheet.append(new_data)
+        workbook.save(xlsx_file_path)
 
     @staticmethod
-    def retrieve_csv_file_data(csv_file_path, row_data):
+    def retrieve_xlsx_file_data(xlsx_file_path, row_data):
         row_serializer = DataSerializer()
 
-        with open(csv_file_path, 'r') as file:
-            data = csv.reader(file)
-            for row in data:
-                if row[0].strip('\n') == str(row_data):
-                    row_serializer = DataSerializer(row)
-                    break
+        data_frame = pd.read_excel(xlsx_file_path, engine='openpyxl',
+                                   dtype=object, header=None)
+        for row in data_frame.values.tolist()[1:]:
+            if str(row[0]).strip('\n') == str(row_data):
+                row_serializer = DataSerializer(row)
+                break
         return row_serializer.data
 
     @staticmethod
-    def update_csv_file_data(csv_file_path, row_data, new_data):
-        data_ids = []
-        tempfile = NamedTemporaryFile('w+t', newline='', delete=False)
+    def update_xlsx_file_data(xlsx_file_path, row_data, new_data):
+        workbook = load_workbook(xlsx_file_path)
+        sheet1 = workbook.get_sheet_by_name('Sheet1')
 
-        with open(csv_file_path, 'r+') as file, tempfile:
-            reader = csv.reader(file, delimiter=',', quotechar='"')
-            writer = csv.writer(tempfile, delimiter=',', quotechar='"')
-            for row in reader:
-                data_ids.append(row[0])
-                if row[0].strip('\n') == row_data:
-                    row = new_data
+        for col in range(1, len(new_data) + 1):
+            cell = sheet1.cell(row=row_data, column=col)
+            if not cell.value:
+                raise NotFound
 
-                writer.writerow(row)
+            cell.value = new_data[col-1]
 
-        shutil.move(tempfile.name, csv_file_path)
-
-        if row_data not in data_ids:
-            raise NotFound
+        workbook.save(xlsx_file_path)
 
     @staticmethod
-    def delete_csv_file_data(csv_file_path, row_data):
-        lines = list()
-        number_of_rows = 0
-
-        with open(csv_file_path, 'r') as file:
-            data = csv.reader(file)
-            for row in data:
-                number_of_rows += 1
-                if row[0].strip('\n') != row_data:
-                    lines.append(row)
-
-        if number_of_rows == len(lines):
-            raise NotFound
-
-        with open(csv_file_path, 'w') as write_file:
-            writer = csv.writer(write_file)
-            writer.writerows(lines)
+    def delete_xlsx_file_data(xlsx_file_path, row_data):
+        workbook = load_workbook(xlsx_file_path)
+        worksheet = workbook.worksheets[0]
+        worksheet.delete_rows(row_data)
+        workbook.save(xlsx_file_path)
