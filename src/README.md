@@ -16,7 +16,7 @@ NOTE:
 
 3 - Install packages in virtual environment by 
 
-    pip install -r requirements/requirements.txt
+    pip install -r src/requirements.txt
 
     pip install -r requirements/test-requirements.txt 
 
